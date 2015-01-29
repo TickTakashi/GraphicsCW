@@ -107,6 +107,27 @@ void renderScene(void)
 
 ///////////////////////////////////////////////////////////////////////
 // mouse interaction functions
+
+// Maps the GLUT_X_MOUSE buttons on to indices from 0 to 2, in order to
+// compress all possible button combinations into one flag int.
+int getMouseMapping(int button) {
+  switch(button) {
+    case GLUT_LEFT_BUTTON:
+      return 0;
+    case GLUT_MIDDLE_BUTTON:
+      return 1;
+    case GLUT_RIGHT_BUTTON:
+    default:
+      return 2;
+  }
+}
+
+// Get a mouse button by its GLUT ID.
+bool getMouseButtonDown(int button_id) {
+  return mouse_buttons & (1 << getMouseMapping(button_id));
+}
+
+
 void mouseClick(int button, int state, int x, int y)
 {
   /////////////////////////////////////////////////
@@ -114,8 +135,16 @@ void mouseClick(int button, int state, int x, int y)
   // use GLUT_UP and GLUT_DOWN to evaluate the current
   // "state" of the mouse.
   /////////////////////////////////////////////////
+  // Update mouse flags to show that buttons are down or up.
+  int b_index = getMouseMapping(button);
+  mouse_buttons &= ~(1 << b_index);
+  mouse_buttons != (state == GLUT_DOWN) << b_index;
 
-
+  // for mouse down, update the original x and y positions for delta calcs
+  if (state == GLUT_DOWN) {
+    mouse_old_x = x;
+    mouse_old_y = y;
+  }
   /////////////////////////////////////////////////
 }
 
@@ -126,10 +155,29 @@ void mouseMotion(int x, int y)
   // and calculate reasonable values for object
   // rotations
   /////////////////////////////////////////////////
+  // Calculate mouse delta
+  int delta_x = x - mouse_old_x;
+  int delta_y = y - mouse_old_y;
 
+  // Check if mouse buttons are down.
+  // If left is down, orbit by some angle based on delta x & y.
+  if (getMouseButtonDown(GLUT_LEFT_BUTTON)) {
+    rotate_x += delta_x; // TODO: make this cooler.
+  }
+ 
+  // If right mouse is down, zoom based on delta y.
+  if (getMouseButtonDown(GLUT_RIGHT_BUTTON)) {
+    // TODO
+  }
+
+  // If middle mouse is down, pan based on delta x & y. 
+  if (getMouseButtonDown(GLUT_MIDDLE_BUTTON)) {
+    // TODO
+  }
 
   /////////////////////////////////////////////////
 }
+
 
 
 ///////////////////////////////////////////////////////////////////////
