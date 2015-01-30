@@ -58,9 +58,14 @@ GLuint tex;
 int mouse_old_x, mouse_old_y;
 int mouse_buttons = 0;
 float rotate_x = 0.0, rotate_y = 0.0;
+float old_rotate_x = 0.0, old_rotate_y = 0.0;
 float move_x = 0.0, move_y = 0.0;
 unsigned int win_width = 128, win_height = 128;
 float translate_z = 0.0;
+float old_translate_z = 0.0;
+float old_translate_x = 0.0;
+float old_translate_y = 0.0;
+float zoom_speed = 0.01f;
 unsigned int frameCaptured = 0;
 /////////////////////////////////////////////////
 
@@ -83,7 +88,9 @@ void renderScene(void)
   glLightfv(GL_LIGHT0, GL_POSITION, lpos);
   /////////////////////////////////////////////////
   //TODO add scene interaction code here
-
+  glTranslatef(move_x, -move_y, translate_z);
+  glRotatef(rotate_x, 0.0f, 1.0f, 0.0f);
+  glRotatef(rotate_y, 1.0f, 0.0f, 0.0f); 
   /////////////////////////////////////////////////
   GL_CHECK(glUseProgram(p));
   glutSolidTeapot(0.5);
@@ -138,12 +145,20 @@ void mouseClick(int button, int state, int x, int y)
   // Update mouse flags to show that buttons are down or up.
   int b_index = getMouseMapping(button);
   mouse_buttons &= ~(1 << b_index);
-  mouse_buttons != (state == GLUT_DOWN) << b_index;
+  mouse_buttons |= (state == GLUT_DOWN) << b_index;
 
   // for mouse down, update the original x and y positions for delta calcs
   if (state == GLUT_DOWN) {
     mouse_old_x = x;
     mouse_old_y = y;
+  }
+
+  if (state == GLUT_UP) {
+    old_rotate_x = rotate_x;
+    old_rotate_y = rotate_y; 
+    old_translate_z = translate_z;
+    old_translate_x = move_x;
+    old_translate_y = move_y;
   }
   /////////////////////////////////////////////////
 }
@@ -158,21 +173,22 @@ void mouseMotion(int x, int y)
   // Calculate mouse delta
   int delta_x = x - mouse_old_x;
   int delta_y = y - mouse_old_y;
-
   // Check if mouse buttons are down.
   // If left is down, orbit by some angle based on delta x & y.
   if (getMouseButtonDown(GLUT_LEFT_BUTTON)) {
-    rotate_x += delta_x; // TODO: make this cooler.
+    rotate_x = delta_x + old_rotate_x;
+    rotate_y = delta_y + old_rotate_y;
   }
  
   // If right mouse is down, zoom based on delta y.
   if (getMouseButtonDown(GLUT_RIGHT_BUTTON)) {
-    // TODO
+    translate_z = delta_y * zoom_speed + old_translate_z; 
   }
 
   // If middle mouse is down, pan based on delta x & y. 
   if (getMouseButtonDown(GLUT_MIDDLE_BUTTON)) {
-    // TODO
+    move_x = delta_x * zoom_speed + old_translate_x;
+    move_y = delta_y * zoom_speed + old_translate_y;
   }
 
   /////////////////////////////////////////////////
