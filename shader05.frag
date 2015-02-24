@@ -124,4 +124,21 @@ void main()
   ////////////////////////////////////////////////////////////////////
   // TODO 
   ////////////////////////////////////////////////////////////////////
+  //// Basic Ray Casting.
+  // Create a Ray from 'point' in direction 'dir' 
+  Ray ray;
+  ray.origin = point;
+  ray.dir = dir; 
+
+  // Frag color is initially black
+  vec4 color = vec4(0.0, 0.0, 0.0, 0.0); 
+
+  // if ray hits something {
+  //   At the point where this ray intersects with FIRST hit object
+  //     for each light
+  //       we cast a shadow ray to use for cast shadows later
+  //       color += shading for this light (illumination equations)
+  // }
+  
+  outcolor = color;
 }

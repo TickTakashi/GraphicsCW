@@ -1,0 +1,1 @@
+I think it would be interesting to add a bump map texture to use in combination with the marble texture in order to create a more visually interesting surface by shading the shallow cracks in the surface (by using intensity values in the bump map to alter normals for lighting calculations).

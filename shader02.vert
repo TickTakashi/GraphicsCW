@@ -35,18 +35,17 @@ void main()
     ///////////////////////////////////////////////////
     //TODO add code for exercise 2.1 Gouraud shading here
     ///////////////////////////////////////////////////
-   
     // Set u
     float u = 0.3; 
 
     // Calculate light vectors.
     vec3 light_vec = normalize(-vertex.pos + vec3(gl_ModelViewMatrix * gl_LightSource[0].position));
-    vec3 reflected_vec = normalize(2 * dot(vertex.normal, light_vec) * vertex.normal - light_vec);
+    vec3 reflected_vec = reflect(-light_vec, vertex.normal);
 
     // Calculate camera vector.
     // Note: After ModelView, the camera is the origin, and therefore the
     // view direction vector for this vertex is just its normalized position.
-    vec3 camera_view = normalize(vertex.pos);
+    vec3 camera_view = -normalize(vertex.pos);
 
     // Calculate distance to light source.
     float dist = distance(vertex.pos, vec3(gl_ModelViewMatrix * gl_LightSource[0].position));
@@ -58,9 +57,9 @@ void main()
 
     // Calculate resulting color
     vec4 ia = ambientColor;
-    vec4 id = attenuation * diffuseColor * dot(vertex.normal, light_vec); 
-    vec4 is = attenuation * specularColor * pow(dot(reflected_vec, camera_view), u * specularExponent);
-    
+    vec4 id = attenuation * diffuseColor * max(dot(vertex.normal, light_vec), 0); 
+    vec4 is = attenuation * specularColor * pow(max(dot(reflected_vec, camera_view), 0), u * specularExponent);
+     
     vertex.color = ia + id + is;
     ///////////////////////////////////////////////////
   }

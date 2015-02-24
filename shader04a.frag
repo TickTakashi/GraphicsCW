@@ -27,16 +27,30 @@ in fragmentData
 void main()
 {
   //texture information
-  vec4 outcol = texture2D(textureImage, frag.texCoords.st);
+  vec4 tex_col = texture2D(textureImage, frag.texCoords.st);
 
   //////////////////////////////////////////////////////////
   //TODO Exercise 04a: integrate the texture information 
   // into a Phong shader (e.g. into the one from Exercise 2)
   //////////////////////////////////////////////////////////
+  float bump_strength = 5.0;
+  vec3 bump_pos = frag.vpos;// + frag.normal * (tex_col.b - (tex_col.r + tex_col.g)) * bump_strength;
+  vec3 lightvec = -bump_pos + gl_LightSource[0].position.xyz;
+  float d = length(lightvec);
+  lightvec = normalize(lightvec);
+  vec3 camvec = normalize(bump_pos);
+  vec3 reflectvec = reflect(lightvec, frag.normal);
 
+  float attenuation = 1.0 / (gl_LightSource[0].constantAttenuation
+    + gl_LightSource[0].linearAttenuation * d
+    + gl_LightSource[0].quadraticAttenuation * d * d);
 
-    gl_FragColor = vec4(1,0,0,0);
+  float u = 0.3;
+
+  vec4 ia = tex_col;
+  vec4 id = attenuation * diffuseColor * max(dot(frag.normal, lightvec), 0);
+  vec4 is = attenuation * specularColor * pow(max(dot(reflectvec, camvec), 0),
+    u * specularExponent);
+  gl_FragColor = ia + id + is;
   //////////////////////////////////////////////////////////
-
-
 }

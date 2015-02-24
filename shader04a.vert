@@ -26,15 +26,14 @@ void main()
 {
 	vertex.pos = vec3(gl_ModelViewMatrix * gl_Vertex);
 	vertex.normal = normalize(gl_NormalMatrix * gl_Normal);
-	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;  
+	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 	vertex.color = vec4(1.0,0.0,0.0,1.0);
 
   //////////////////////////////////////////////////////////
-  // TODO Exercise 04a: add correct coordinate value to 
-	// vertex.texCoords = ...
-  // and follow the varibale through the pipeline 
+  // TODO Exercise 04a: add correct coordinate value to
+  // vertex.texCoords = ...
+  // and follow the varibale through the pipeline
   // down to the fragment shader
   //////////////////////////////////////////////////////////
-
-
+  vertex.texCoords = gl_MultiTexCoord0;
 }
