@@ -118,9 +118,6 @@ void main()
   seed = int(mod(dir.x * dir.y * 39786038.0, 65536.0));
   //scene definition end
 
-  //make empty for exercise 
-  outcolour = vec4(1,1,1,1);
-
   ////////////////////////////////////////////////////////////////////
   // TODO 
   ////////////////////////////////////////////////////////////////////
@@ -140,5 +137,5 @@ void main()
   //       color += shading for this light (illumination equations)
   // }
   
-  outcolor = color;
+  outcolour = color;
 }
