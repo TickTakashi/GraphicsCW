@@ -59,7 +59,6 @@ void produceVertex(float beta, float gamma)
   vec4 b = gl_in[1].gl_Position;
   vec4 c = gl_in[2].gl_Position;
   vec4 new_position = alpha * a + beta * b + gamma * c;
-  
   frag.vpos = alpha * vertices[0].pos + beta * vertices[1].pos + gamma * vertices[2].pos;
   frag.normal = alpha * vertices[0].normal + beta * vertices[1].normal + gamma * vertices[2].normal;
   frag.color = alpha * vertices[0].color + beta * vertices[1].color + gamma * vertices[2].color;
@@ -75,7 +74,7 @@ void main()
   //TODO replace pass through shader with solution
   ///////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////
-  if (level >  0 && level <= 2) {
+  if (level >= 0 && level <= 2) {
     int ps = 1 << level;
     int x;
     int y;

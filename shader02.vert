@@ -35,31 +35,22 @@ void main()
     ///////////////////////////////////////////////////
     //TODO add code for exercise 2.1 Gouraud shading here
     ///////////////////////////////////////////////////
-    // Set u
-    float u = 0.3; 
+    vec3 lightvec = -vertex.pos + gl_LightSource[0].position.xyz;
+    float d = length(lightvec);
+    lightvec = normalize(lightvec);
+    vec3 camvec = normalize(vertex.pos);
+    vec3 reflectvec = reflect(lightvec, vertex.normal);
 
-    // Calculate light vectors.
-    vec3 light_vec = normalize(-vertex.pos + vec3(gl_ModelViewMatrix * gl_LightSource[0].position));
-    vec3 reflected_vec = reflect(-light_vec, vertex.normal);
+    float attenuation = 1.0 / (gl_LightSource[0].constantAttenuation
+      + gl_LightSource[0].linearAttenuation * d
+      + gl_LightSource[0].quadraticAttenuation * d * d);
 
-    // Calculate camera vector.
-    // Note: After ModelView, the camera is the origin, and therefore the
-    // view direction vector for this vertex is just its normalized position.
-    vec3 camera_view = -normalize(vertex.pos);
+    float u = 0.3;
 
-    // Calculate distance to light source.
-    float dist = distance(vertex.pos, vec3(gl_ModelViewMatrix * gl_LightSource[0].position));
-
-    // Calculate Attenuation
-    float attenuation = 1.0 / (gl_LightSource[0].constantAttenuation +
-      gl_LightSource[0].linearAttenuation * dist +
-      gl_LightSource[0].quadraticAttenuation * dist * dist);
-
-    // Calculate resulting color
     vec4 ia = ambientColor;
-    vec4 id = attenuation * diffuseColor * max(dot(vertex.normal, light_vec), 0); 
-    vec4 is = attenuation * specularColor * pow(max(dot(reflected_vec, camera_view), 0), u * specularExponent);
-     
+    vec4 id = attenuation * diffuseColor * max(dot(vertex.normal, lightvec), 0);
+    vec4 is = attenuation * specularColor * pow(max(dot(reflectvec, camvec), 0),
+      u * specularExponent);
     vertex.color = ia + id + is;
     ///////////////////////////////////////////////////
   }
